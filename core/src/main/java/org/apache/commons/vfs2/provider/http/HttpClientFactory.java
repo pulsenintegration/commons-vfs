@@ -23,7 +23,6 @@ import org.apache.commons.httpclient.HttpConnectionManager;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.methods.HeadMethod;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.vfs2.FileSystemException;
@@ -112,12 +111,13 @@ public final class HttpClientFactory
                         client.getState().setProxyCredentials(scope, proxyCreds);
                     }
 
+                    final HttpClientParams httpClientParams = new HttpClientParams();
                     if (builder.isPreemptiveAuth(fileSystemOptions))
                     {
-                        final HttpClientParams httpClientParams = new HttpClientParams();
                         httpClientParams.setAuthenticationPreemptive(true);
-                        client.setParams(httpClientParams);
                     }
+                   	httpClientParams.setCookiePolicy(builder.getCookiePolicy(fileSystemOptions));
+                    client.setParams(httpClientParams);
                 }
 
                 final Cookie[] cookies = builder.getCookies(fileSystemOptions);

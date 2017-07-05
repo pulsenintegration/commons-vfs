@@ -17,6 +17,7 @@
 package org.apache.commons.vfs2.provider.http;
 
 import org.apache.commons.httpclient.Cookie;
+import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.vfs2.FileSystem;
 import org.apache.commons.vfs2.FileSystemConfigBuilder;
@@ -47,6 +48,12 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
     private static final String DEFAULT_USER_AGENT = "Jakarta-Commons-VFS";
 
     private static final String KEY_PREEMPTIVE_AUTHENTICATION = "preemptiveAuth";
+   
+    private static final String DEFAULT_COOKIE_POLICY = CookiePolicy.DEFAULT;
+    
+    private static final String KEY_COOKIE_POLICY = "cookiePolicy";
+    
+    
 
     /**
      * Create new config builder.
@@ -273,17 +280,15 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
     }
 
     /**
-     * Sets the given value for preemptive HTTP authentication (using BASIC) on the
-     * given FileSystemOptions object.  Defaults to false if not set.  It may be
-     * appropriate to set to true in cases when the resulting chattiness of the
-     * conversation outweighs any architectural desire to use a stronger authentication
-     * scheme than basic/preemptive.
+     * Sets the given value for Cookie Policy on the
+     * given FileSystemOptions object.
+     * 
      * @param opts The FileSystemOptions.
-     * @param preemptiveAuth the desired setting; true=enabled and false=disabled.
+     * @param cookiePolicy the desired policy.
      */
-    public void setPreemptiveAuth(final FileSystemOptions opts, final boolean preemptiveAuth)
+    public void setCookiePolicy(final FileSystemOptions opts, final String cookiePolicy)
     {
-        setParam(opts, KEY_PREEMPTIVE_AUTHENTICATION, Boolean.valueOf(preemptiveAuth));
+        setParam(opts, KEY_COOKIE_POLICY, cookiePolicy);
     }
 
     /**
@@ -334,6 +339,32 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
         return getInteger(opts, HttpConnectionManagerParams.SO_TIMEOUT, DEFAULT_SO_TIMEOUT);
     }
 
+    /**
+     * Determines if the FileSystemOptions indicate that preemptive
+     * authentication is requested.
+     * @param opts The FileSystemOptions.
+     * @return true if preemptiveAuth is requested.
+     * @since 2.0
+     */
+    public String getCookiePolicy(final FileSystemOptions opts)
+    {
+        return getString(opts, KEY_COOKIE_POLICY, DEFAULT_COOKIE_POLICY);        
+    }
+
+    /**
+     * Sets the given value for preemptive HTTP authentication (using BASIC) on the
+     * given FileSystemOptions object.  Defaults to false if not set.  It may be
+     * appropriate to set to true in cases when the resulting chattiness of the
+     * conversation outweighs any architectural desire to use a stronger authentication
+     * scheme than basic/preemptive.
+     * @param opts The FileSystemOptions.
+     * @param preemptiveAuth the desired setting; true=enabled and false=disabled.
+     */
+    public void setPreemptiveAuth(final FileSystemOptions opts, final boolean preemptiveAuth)
+    {
+        setParam(opts, KEY_PREEMPTIVE_AUTHENTICATION, Boolean.valueOf(preemptiveAuth));
+    }
+    
     /**
      * Assign the user agent to attach to the outgoing http methods
      *
