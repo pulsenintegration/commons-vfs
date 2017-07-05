@@ -25,7 +25,7 @@ import org.apache.commons.vfs2.provider.UriParser;
 import org.apache.commons.vfs2.provider.VfsComponentContext;
 
 /**
- * Implementation for sftp. set default port to 139
+ * Implementation for smb. set default port to 139
  */
 public class SmbFileNameParser extends URLFileNameParser
 {
