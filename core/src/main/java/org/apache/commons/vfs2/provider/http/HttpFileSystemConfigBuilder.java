@@ -16,6 +16,8 @@
  */
 package org.apache.commons.vfs2.provider.http;
 
+import java.net.URL;
+
 import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
@@ -53,6 +55,15 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
     
     private static final String KEY_COOKIE_POLICY = "cookiePolicy";
     
+    private static final String KEY_KEYSTORE = "keystore";
+
+    private static final String KEY_KEYSTORE_PASSWORD = "keystorePassword";
+    
+    private static final String KEY_TRUSTSTORE = "truststore";
+
+    private static final String KEY_TRUSTSTORE_PASSWORD = "truststorePassword";
+    
+    private static final String DEFAULT_STORE_PASSWORD = "changeit";
     
 
     /**
@@ -363,6 +374,100 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
     public void setPreemptiveAuth(final FileSystemOptions opts, final boolean preemptiveAuth)
     {
         setParam(opts, KEY_PREEMPTIVE_AUTHENTICATION, Boolean.valueOf(preemptiveAuth));
+    }
+
+    /**
+     * Set the URL to the keystore containing the client certificate
+     *
+     * @param opts The FileSystemOptions.
+     * @param keyStore URL of the keystore
+     * @since 2.2
+     */
+    public void setKeyStore(final FileSystemOptions opts, final URL keyStore) {
+    	setParam(opts, KEY_KEYSTORE, keyStore);
+    }
+    
+    /**
+     * Return the URL to the keystore
+
+     * @param opts The FileSystemOptions.
+     *
+     * @return User provided keystore URL
+     * @since 2.2
+     */
+    public URL getKeyStore(final FileSystemOptions opts) {
+    	final URL keystore = (URL) getParam(opts, KEY_KEYSTORE);
+    	return keystore;
+    }
+    
+    /**
+     * Set the password to use for the keystore
+     *
+     * @param opts The FileSystemOptions.
+     * @param keyStorePassword User provided password to unlock the keystore, otherwise default: changeit
+     * @since 2.2
+     */
+    public void setKeyStorePassword(final FileSystemOptions opts, final String keyStorePassword) {
+    	setParam(opts, KEY_KEYSTORE_PASSWORD, keyStorePassword);
+    }
+    
+    /**
+     * Return the password from the keystore
+
+     * @param opts The FileSystemOptions.
+     *
+     * @return User provided keystore password
+     * @since 2.2
+     */
+    public String getKeyStorePassword(final FileSystemOptions opts) {
+    	return getString(opts, KEY_KEYSTORE_PASSWORD, DEFAULT_STORE_PASSWORD);
+    }
+
+    /**
+     * Set the URL to the truststore
+     *
+     * @param opts The FileSystemOptions.
+     * @param trustStore URL of the truststore
+     * @since 2.2
+     */
+    public void setTrustStore(final FileSystemOptions opts, final URL trustStore) {
+    	setParam(opts, KEY_TRUSTSTORE, trustStore);
+    }
+    
+    /**
+     * Return the URL to the truststore
+     *
+     * @param opts The FileSystemOptions.
+     * 
+     * @return User provided truststore URL
+     * @since 2.2
+     */
+    public URL getTrustStore(final FileSystemOptions opts) {
+    	final URL trustStore = (URL) getParam(opts, KEY_TRUSTSTORE);
+    	return trustStore;
+    }
+    
+    /**
+     * Set the password to use for the truststore
+     *
+     * @param opts The FileSystemOptions.
+     * @param trustStorePassword User provided password to unlock the truststore, otherwise default: changeit
+     * @since 2.2
+     */
+    public void setTrustStorePassword(final FileSystemOptions opts, final String trustStorePassword) {
+    	setParam(opts, KEY_TRUSTSTORE_PASSWORD, trustStorePassword);
+    }
+    
+    /**
+     * Return the password from the truststore
+     * 
+     * @param opts The FileSystemOptions.
+     *
+     * @return User provided truststore password
+     * @since 2.2
+     */
+    public String getTrustStorePassword(final FileSystemOptions opts) {
+    	return getString(opts, KEY_TRUSTSTORE_PASSWORD, DEFAULT_STORE_PASSWORD);
     }
     
     /**
