@@ -112,15 +112,15 @@ public final class HttpClientFactory
                         final AuthScope scope = new AuthScope(proxyHost, AuthScope.ANY_PORT);
                         client.getState().setProxyCredentials(scope, proxyCreds);
                     }
-
-                    final HttpClientParams httpClientParams = new HttpClientParams();
-                    if (builder.isPreemptiveAuth(fileSystemOptions))
-                    {
-                        httpClientParams.setAuthenticationPreemptive(true);
-                    }
-                   	httpClientParams.setCookiePolicy(builder.getCookiePolicy(fileSystemOptions));
-                    client.setParams(httpClientParams);
                 }
+                
+                final HttpClientParams httpClientParams = new HttpClientParams();
+                if (builder.isPreemptiveAuth(fileSystemOptions))
+                {
+                	httpClientParams.setAuthenticationPreemptive(true);
+                }
+                httpClientParams.setCookiePolicy(builder.getCookiePolicy(fileSystemOptions));
+                client.setParams(httpClientParams);
 
                 final Cookie[] cookies = builder.getCookies(fileSystemOptions);
                 if (cookies != null)
