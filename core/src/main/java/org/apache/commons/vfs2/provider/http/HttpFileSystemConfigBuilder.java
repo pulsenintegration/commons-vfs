@@ -16,6 +16,8 @@
  */
 package org.apache.commons.vfs2.provider.http;
 
+import java.util.HashMap;
+
 import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.vfs2.FileSystem;
@@ -47,7 +49,9 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
     private static final String DEFAULT_USER_AGENT = "Jakarta-Commons-VFS";
 
     private static final String KEY_PREEMPTIVE_AUTHENTICATION = "preemptiveAuth";
-
+    
+    protected static final String KEY_ACCEPT_HEADER = "acceptHeader";
+    
     /**
      * Create new config builder.
      * @param prefix String for properties of this file system.
@@ -355,6 +359,15 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
         return userAgent != null ? userAgent : DEFAULT_USER_AGENT;
     }
 
+    public void setAcceptHeader(final FileSystemOptions opts){
+    	setParam(opts, "Accept", KEY_ACCEPT_HEADER);
+    }
+    
+    public String getAcceptHeader(final FileSystemOptions opts){
+    	return getString(opts, KEY_ACCEPT_HEADER);
+    	
+    }
+    
 
     @Override
     protected Class<? extends FileSystem> getConfigClass()

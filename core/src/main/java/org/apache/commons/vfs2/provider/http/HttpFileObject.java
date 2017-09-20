@@ -19,6 +19,7 @@ package org.apache.commons.vfs2.provider.http;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.util.HashMap;
 
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
@@ -75,8 +76,11 @@ public class HttpFileObject<FS extends HttpFileSystem> extends AbstractFileObjec
     private final String urlCharset;
     private final String userAgent;
     private final boolean followRedirect;
-
-    private HeadMethod method;
+    
+    private final String acceptHeader;
+    
+    
+	private HeadMethod method;
 
     protected HttpFileObject(final AbstractFileName name, final FS fileSystem)
     {
@@ -91,6 +95,7 @@ public class HttpFileObject<FS extends HttpFileSystem> extends AbstractFileObjec
         urlCharset = builder.getUrlCharset(fileSystemOptions);
         userAgent = builder.getUserAgent(fileSystemOptions);
         followRedirect = builder.getFollowRedirect(fileSystemOptions);
+        acceptHeader = builder.getAcceptHeader(fileSystemOptions);
     }
 
     /**
@@ -228,6 +233,10 @@ public class HttpFileObject<FS extends HttpFileSystem> extends AbstractFileObjec
         return userAgent;
     }
 
+    protected String getAcceptHeader() {
+		return acceptHeader;
+	}
+    
     HeadMethod getHeadMethod() throws IOException
     {
         if (method != null)
@@ -261,6 +270,11 @@ public class HttpFileObject<FS extends HttpFileSystem> extends AbstractFileObjec
         method.setPath(pathEncoded);
         method.setFollowRedirects(this.getFollowRedirect());
         method.setRequestHeader("User-Agent", this.getUserAgent());
+        if (this.getAcceptHeader() != null)
+        {
+        	method.setRequestHeader("Accept", this.getAcceptHeader());
+        }
+        
     }
 
     /*
