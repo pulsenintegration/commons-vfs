@@ -75,11 +75,11 @@ public final class FtpsClientFactory
             final FTPSClient client;
             if (builder.getFtpsMode(fileSystemOptions) == FtpsMode.IMPLICIT)
             {
-                client = new FTPSClient(true);
+                client = new SSLSessionReuseFTPSClient("TLS",true);
             }
             else
             {
-                client = new FTPSClient();
+                client = new SSLSessionReuseFTPSClient("TLS",false);
             }
 
             final TrustManager trustManager = builder.getTrustManager(fileSystemOptions);

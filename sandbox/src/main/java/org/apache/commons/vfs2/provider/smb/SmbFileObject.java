@@ -45,14 +45,12 @@ import org.apache.commons.vfs2.util.UserAuthenticatorUtils;
 public class SmbFileObject
     extends AbstractFileObject<SmbFileSystem>
 {
-    // private final String fileName;
     private SmbFile file;
 
     protected SmbFileObject(final AbstractFileName name,
                             final SmbFileSystem fileSystem) throws FileSystemException
     {
         super(name, fileSystem);
-        // this.fileName = UriParser.decode(name.getURI());
     }
 
     /**
@@ -90,10 +88,7 @@ public class SmbFileObject
                            getFileSystem().getFileSystemOptions(),
                            SmbFileProvider.AUTHENTICATOR_TYPES);
 
-            NtlmPasswordAuthentication auth = null;
-            if (authData != null)
-            {
-                auth = new NtlmPasswordAuthentication(
+            NtlmPasswordAuthentication auth = new NtlmPasswordAuthentication(
                     UserAuthenticatorUtils.toString(
                         UserAuthenticatorUtils.getData(authData, UserAuthenticationData.DOMAIN,
                             UserAuthenticatorUtils.toChar(smbFileName.getDomain()))),
@@ -103,7 +98,6 @@ public class SmbFileObject
                     UserAuthenticatorUtils.toString(
                         UserAuthenticatorUtils.getData(authData, UserAuthenticationData.PASSWORD,
                             UserAuthenticatorUtils.toChar(smbFileName.getPassword()))));
-            }
 
             // if auth == null SmbFile uses default credentials
             // ("jcifs.smb.client.domain", "?"), ("jcifs.smb.client.username", "GUEST"),

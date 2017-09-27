@@ -18,7 +18,10 @@ package org.apache.commons.vfs2.provider.http;
 
 import java.util.HashMap;
 
+import java.net.URL;
+
 import org.apache.commons.httpclient.Cookie;
+import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.vfs2.FileSystem;
 import org.apache.commons.vfs2.FileSystemConfigBuilder;
@@ -49,9 +52,25 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
     private static final String DEFAULT_USER_AGENT = "Jakarta-Commons-VFS";
 
     private static final String KEY_PREEMPTIVE_AUTHENTICATION = "preemptiveAuth";
+   
+    private static final String DEFAULT_COOKIE_POLICY = CookiePolicy.DEFAULT;
     
-    protected static final String KEY_ACCEPT_HEADER = "acceptHeader";
+    private static final String KEY_COOKIE_POLICY = "cookiePolicy";
     
+    private static final String KEY_KEYSTORE = "keystore";
+    
+    protected static final String KEY_ACCEPT_HEADER = "Accept";
+    
+    private static final String KEY_KEYSTORE_PASSWORD = "keystorePassword";
+    
+    private static final String KEY_TRUSTSTORE = "truststore";
+
+    private static final String KEY_TRUSTSTORE_PASSWORD = "truststorePassword";
+    
+    private static final String DEFAULT_STORE_PASSWORD = "changeit";
+   
+    
+
     /**
      * Create new config builder.
      * @param prefix String for properties of this file system.
@@ -276,18 +295,33 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
         return getBoolean(opts, KEY_PREEMPTIVE_AUTHENTICATION, Boolean.FALSE).booleanValue();
     }
 
+    
     /**
-     * Sets the given value for preemptive HTTP authentication (using BASIC) on the
-     * given FileSystemOptions object.  Defaults to false if not set.  It may be
-     * appropriate to set to true in cases when the resulting chattiness of the
-     * conversation outweighs any architectural desire to use a stronger authentication
-     * scheme than basic/preemptive.
+     * Determines if the FileSystemOptions indicate that preemptive
+     * authentication is requested.
      * @param opts The FileSystemOptions.
-     * @param preemptiveAuth the desired setting; true=enabled and false=disabled.
+     * @return true if preemptiveAuth is requested.
+     * @since 2.0
      */
-    public void setPreemptiveAuth(final FileSystemOptions opts, final boolean preemptiveAuth)
+    public String getCookiePolicy(final FileSystemOptions opts)
     {
-        setParam(opts, KEY_PREEMPTIVE_AUTHENTICATION, Boolean.valueOf(preemptiveAuth));
+        return getString(opts, KEY_COOKIE_POLICY, DEFAULT_COOKIE_POLICY);        
+    }
+    
+    
+    /**
+     * Sets the given value for Cookie Policy on the
+     * given FileSystemOptions object.
+     * 
+     * Sets the given value for Cookie Policy on the
+     * given FileSystemOptions object.
+     * 
+     * @param opts The FileSystemOptions.
+     * @param cookiePolicy the desired policy.
+     */
+    public void setCookiePolicy(final FileSystemOptions opts, final String cookiePolicy)
+    {
+        setParam(opts, KEY_COOKIE_POLICY, cookiePolicy);
     }
 
     /**
@@ -338,6 +372,115 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
         return getInteger(opts, HttpConnectionManagerParams.SO_TIMEOUT, DEFAULT_SO_TIMEOUT);
     }
 
+    
+    /**
+     * Sets the given value for preemptive HTTP authentication (using BASIC) on the
+     * given FileSystemOptions object.  Defaults to false if not set.  It may be
+     * appropriate to set to true in cases when the resulting chattiness of the
+     * conversation outweighs any architectural desire to use a stronger authentication
+     * scheme than basic/preemptive.
+     * @param opts The FileSystemOptions.
+     * @param preemptiveAuth the desired setting; true=enabled and false=disabled.
+     */
+    public void setPreemptiveAuth(final FileSystemOptions opts, final boolean preemptiveAuth)
+    {
+        setParam(opts, KEY_PREEMPTIVE_AUTHENTICATION, Boolean.valueOf(preemptiveAuth));
+    }
+
+    /**
+     * Set the URL to the keystore containing the client certificate
+     *
+     * @param opts The FileSystemOptions.
+     * @param keyStore URL of the keystore
+     * @since 2.2
+     */
+    public void setKeyStore(final FileSystemOptions opts, final URL keyStore) {
+    	setParam(opts, KEY_KEYSTORE, keyStore);
+    }
+    
+    /**
+     * Return the URL to the keystore
+
+     * @param opts The FileSystemOptions.
+     *
+     * @return User provided keystore URL
+     * @since 2.2
+     */
+    public URL getKeyStore(final FileSystemOptions opts) {
+    	final URL keystore = (URL) getParam(opts, KEY_KEYSTORE);
+    	return keystore;
+    }
+    
+    /**
+     * Set the password to use for the keystore
+     *
+     * @param opts The FileSystemOptions.
+     * @param keyStorePassword User provided password to unlock the keystore, otherwise default: changeit
+     * @since 2.2
+     */
+    public void setKeyStorePassword(final FileSystemOptions opts, final String keyStorePassword) {
+    	setParam(opts, KEY_KEYSTORE_PASSWORD, keyStorePassword);
+    }
+    
+    /**
+     * Return the password from the keystore
+
+     * @param opts The FileSystemOptions.
+     *
+     * @return User provided keystore password
+     * @since 2.2
+     */
+    public String getKeyStorePassword(final FileSystemOptions opts) {
+    	return getString(opts, KEY_KEYSTORE_PASSWORD, DEFAULT_STORE_PASSWORD);
+    }
+
+    /**
+     * Set the URL to the truststore
+     *
+     * @param opts The FileSystemOptions.
+     * @param trustStore URL of the truststore
+     * @since 2.2
+     */
+    public void setTrustStore(final FileSystemOptions opts, final URL trustStore) {
+    	setParam(opts, KEY_TRUSTSTORE, trustStore);
+    }
+    
+    /**
+     * Return the URL to the truststore
+     *
+     * @param opts The FileSystemOptions.
+     * 
+     * @return User provided truststore URL
+     * @since 2.2
+     */
+    public URL getTrustStore(final FileSystemOptions opts) {
+    	final URL trustStore = (URL) getParam(opts, KEY_TRUSTSTORE);
+    	return trustStore;
+    }
+    
+    /**
+     * Set the password to use for the truststore
+     *
+     * @param opts The FileSystemOptions.
+     * @param trustStorePassword User provided password to unlock the truststore, otherwise default: changeit
+     * @since 2.2
+     */
+    public void setTrustStorePassword(final FileSystemOptions opts, final String trustStorePassword) {
+    	setParam(opts, KEY_TRUSTSTORE_PASSWORD, trustStorePassword);
+    }
+    
+    /**
+     * Return the password from the truststore
+     * 
+     * @param opts The FileSystemOptions.
+     *
+     * @return User provided truststore password
+     * @since 2.2
+     */
+    public String getTrustStorePassword(final FileSystemOptions opts) {
+    	return getString(opts, KEY_TRUSTSTORE_PASSWORD, DEFAULT_STORE_PASSWORD);
+    }
+    
     /**
      * Assign the user agent to attach to the outgoing http methods
      *
@@ -359,8 +502,8 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
         return userAgent != null ? userAgent : DEFAULT_USER_AGENT;
     }
 
-    public void setAcceptHeader(final FileSystemOptions opts){
-    	setParam(opts, "Accept", KEY_ACCEPT_HEADER);
+    public void setAcceptHeader(final FileSystemOptions opts, final String acceptHeader){
+    	setParam(opts, KEY_ACCEPT_HEADER, acceptHeader);
     }
     
     public String getAcceptHeader(final FileSystemOptions opts){

@@ -23,9 +23,11 @@ import org.apache.commons.httpclient.HttpConnectionManager;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.methods.HeadMethod;
+import org.apache.commons.httpclient.contrib.ssl.AuthSSLProtocolSocketFactory;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
+import org.apache.commons.httpclient.protocol.Protocol;
+import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.UserAuthenticationData;
@@ -77,8 +79,7 @@ public final class HttpClientFactory
             client = new HttpClient(mgr);
 
             final HostConfiguration config = new HostConfiguration();
-            config.setHost(hostname, port, scheme);
-
+ 
             if (fileSystemOptions != null)
             {
                 final String proxyHost = builder.getProxyHost(fileSystemOptions);
@@ -111,21 +112,38 @@ public final class HttpClientFactory
                         final AuthScope scope = new AuthScope(proxyHost, AuthScope.ANY_PORT);
                         client.getState().setProxyCredentials(scope, proxyCreds);
                     }
-
-                    if (builder.isPreemptiveAuth(fileSystemOptions))
-                    {
-                        final HttpClientParams httpClientParams = new HttpClientParams();
-                        httpClientParams.setAuthenticationPreemptive(true);
-                        client.setParams(httpClientParams);
-                    }
                 }
+                
+                final HttpClientParams httpClientParams = new HttpClientParams();
+                if (builder.isPreemptiveAuth(fileSystemOptions))
+                {
+                	httpClientParams.setAuthenticationPreemptive(true);
+                }
+                httpClientParams.setCookiePolicy(builder.getCookiePolicy(fileSystemOptions));
+                client.setParams(httpClientParams);
 
                 final Cookie[] cookies = builder.getCookies(fileSystemOptions);
                 if (cookies != null)
                 {
                     client.getState().addCookies(cookies);
                 }
+                
+                if (scheme.equals("https") && (builder.getKeyStore(fileSystemOptions) != null || builder.getTrustStore(fileSystemOptions) != null)) {
+                	ProtocolSocketFactory socketFactory = new AuthSSLProtocolSocketFactory(builder.getKeyStore(fileSystemOptions),
+                    		builder.getKeyStorePassword(fileSystemOptions),
+                    		builder.getTrustStore(fileSystemOptions),
+                    		builder.getTrustStorePassword(fileSystemOptions));
+                    Protocol https = new Protocol("https", socketFactory, port);
+                    config.setHost(hostname, port, https);                 	
+                }
+                else {
+                    config.setHost(hostname, port, scheme);                	
+                }
             }
+            else {
+            	config.setHost(hostname, port, scheme);                	            	
+            }
+            
             /**
              * ConnectionManager set methods must be called after the host & port and proxy host & port
              * are set in the HostConfiguration. They are all used as part of the key when HttpConnectionManagerParams
