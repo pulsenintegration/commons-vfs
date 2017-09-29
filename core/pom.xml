@@ -36,6 +36,11 @@
   </parent>
 
   <dependencies>
+  	<dependency>
+	    <groupId>com.google.guava</groupId>
+	    <artifactId>guava</artifactId>
+	    <version>20.0-hal</version>
+	</dependency>
     <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
@@ -48,6 +53,7 @@
     <dependency>
       <groupId>commons-net</groupId>
       <artifactId>commons-net</artifactId>
+      <version>3.5</version>
       <optional>true</optional>
     </dependency>
     <dependency>

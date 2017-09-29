@@ -16,6 +16,8 @@
  */
 package org.apache.commons.vfs2.provider.http;
 
+import java.util.HashMap;
+
 import java.net.URL;
 
 import org.apache.commons.httpclient.Cookie;
@@ -56,7 +58,9 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
     private static final String KEY_COOKIE_POLICY = "cookiePolicy";
     
     private static final String KEY_KEYSTORE = "keystore";
-
+    
+    protected static final String KEY_ACCEPT_HEADER = "Accept";
+    
     private static final String KEY_KEYSTORE_PASSWORD = "keystorePassword";
     
     private static final String KEY_TRUSTSTORE = "truststore";
@@ -64,6 +68,7 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
     private static final String KEY_TRUSTSTORE_PASSWORD = "truststorePassword";
     
     private static final String DEFAULT_STORE_PASSWORD = "changeit";
+   
     
 
     /**
@@ -290,7 +295,24 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
         return getBoolean(opts, KEY_PREEMPTIVE_AUTHENTICATION, Boolean.FALSE).booleanValue();
     }
 
+    
     /**
+     * Determines if the FileSystemOptions indicate that preemptive
+     * authentication is requested.
+     * @param opts The FileSystemOptions.
+     * @return true if preemptiveAuth is requested.
+     * @since 2.0
+     */
+    public String getCookiePolicy(final FileSystemOptions opts)
+    {
+        return getString(opts, KEY_COOKIE_POLICY, DEFAULT_COOKIE_POLICY);        
+    }
+    
+    
+    /**
+     * Sets the given value for Cookie Policy on the
+     * given FileSystemOptions object.
+     * 
      * Sets the given value for Cookie Policy on the
      * given FileSystemOptions object.
      * 
@@ -350,18 +372,7 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
         return getInteger(opts, HttpConnectionManagerParams.SO_TIMEOUT, DEFAULT_SO_TIMEOUT);
     }
 
-    /**
-     * Determines if the FileSystemOptions indicate that preemptive
-     * authentication is requested.
-     * @param opts The FileSystemOptions.
-     * @return true if preemptiveAuth is requested.
-     * @since 2.0
-     */
-    public String getCookiePolicy(final FileSystemOptions opts)
-    {
-        return getString(opts, KEY_COOKIE_POLICY, DEFAULT_COOKIE_POLICY);        
-    }
-
+    
     /**
      * Sets the given value for preemptive HTTP authentication (using BASIC) on the
      * given FileSystemOptions object.  Defaults to false if not set.  It may be
@@ -491,6 +502,15 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
         return userAgent != null ? userAgent : DEFAULT_USER_AGENT;
     }
 
+    public void setAcceptHeader(final FileSystemOptions opts, final String acceptHeader){
+    	setParam(opts, KEY_ACCEPT_HEADER, acceptHeader);
+    }
+    
+    public String getAcceptHeader(final FileSystemOptions opts){
+    	return getString(opts, KEY_ACCEPT_HEADER);
+    	
+    }
+    
 
     @Override
     protected Class<? extends FileSystem> getConfigClass()
