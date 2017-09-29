@@ -14,7 +14,8 @@ import org.apache.commons.net.ftp.FTPSClient;
 
 import com.google.common.base.Throwables;
 
-public class SSLSessionReuseFTPSClient extends FTPSClient{
+public class FtpsClientSSLSessionReuse extends FTPSClient
+{
 	/**
      * Constructor for FTPSClient allowing specification of protocol
      * and security mode. If isImplicit is true, the port is set to
@@ -23,20 +24,24 @@ public class SSLSessionReuseFTPSClient extends FTPSClient{
      * @param protocol the protocol
      * @param isImplicit The security mode(Implicit/Explicit).
      */
-    public SSLSessionReuseFTPSClient(String protocol, boolean isImplicit) {
+    public FtpsClientSSLSessionReuse(String protocol, boolean isImplicit) 
+    {
         super(protocol, isImplicit);
     }
   	
   // adapted from: https://trac.cyberduck.io/changeset/10760
   @Override
-  protected void _prepareDataSocket_(final Socket socket) throws IOException {
-    if(socket instanceof SSLSocket) {
+  protected void _prepareDataSocket_(final Socket socket) throws IOException 
+  {
+    if (socket instanceof SSLSocket) 
+    {
       final SSLSession session = ((SSLSocket) _socket_).getSession();
       final SSLSessionContext context = session.getSessionContext();
-      if(context != null) {
-	      try {
-	        
-	    	final Field sessionHostPortCache = context.getClass().getDeclaredField("sessionHostPortCache");
+      if (context != null) 
+      {
+	      try 
+	      {
+	       	final Field sessionHostPortCache = context.getClass().getDeclaredField("sessionHostPortCache");
 	        sessionHostPortCache.setAccessible(true);
 	        final Object cache = sessionHostPortCache.get(context);
 	        final Method putMethod = cache.getClass().getDeclaredMethod("put", Object.class, Object.class);
@@ -46,7 +51,9 @@ public class SSLSessionReuseFTPSClient extends FTPSClient{
 	        Object host = getHostMethod.invoke(socket);
 	        final String key = String.format("%s:%s", host, String.valueOf(socket.getPort())).toLowerCase(Locale.ROOT);
 	        putMethod.invoke(cache, key, session);
-	      } catch(Exception e) {
+	      } 
+	      catch (Exception e) 
+	      {
 	        throw Throwables.propagate(e);
 	      }
       }
