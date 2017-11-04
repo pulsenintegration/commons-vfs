@@ -90,7 +90,7 @@ public class SftpProviderTestCase extends AbstractProviderTestConfig {
     /**
      * The underlying filesystem
      */
-    private SftpFileSystem filesystem;
+    private SftpFileSystem fileSystem;
 
     /**
      * Implements FileSystemFactory because SSHd does not know about users and home directories.
@@ -186,7 +186,7 @@ public class SftpProviderTestCase extends AbstractProviderTestConfig {
      * @throws FtpException
      * @throws IOException
      */
-    private static void setUpClass() throws FtpException, IOException, InterruptedException {
+    private static void setUpClass() throws FtpException, IOException {
         SocketPort = FreeSocketPortUtil.findFreeLocalPort();
         // Use %40 for @ in a URL
         ConnectionUri = String.format("sftp://%s@localhost:%d", DEFAULT_USER, SocketPort);
@@ -353,7 +353,7 @@ public class SftpProviderTestCase extends AbstractProviderTestConfig {
         }
     }
 
-    public SftpProviderTestCase(final boolean streamProxyMode) throws IOException {
+    public SftpProviderTestCase(final boolean streamProxyMode) {
         this.streamProxyMode = streamProxyMode;
     }
 
@@ -396,7 +396,7 @@ public class SftpProviderTestCase extends AbstractProviderTestConfig {
         }
 
         final FileObject fileObject = manager.resolveFile(uri, fileSystemOptions);
-        this.filesystem = (SftpFileSystem) fileObject.getFileSystem();
+        this.fileSystem = (SftpFileSystem) fileObject.getFileSystem();
         return fileObject;
     }
 
