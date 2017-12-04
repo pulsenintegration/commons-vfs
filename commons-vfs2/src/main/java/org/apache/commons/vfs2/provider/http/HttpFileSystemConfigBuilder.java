@@ -16,8 +16,7 @@
  */
 package org.apache.commons.vfs2.provider.http;
 
-import java.util.HashMap;
-
+import java.util.Map;
 import java.net.URL;
 
 import org.apache.commons.httpclient.Cookie;
@@ -59,7 +58,7 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
     
     private static final String KEY_KEYSTORE = "keystore";
     
-    protected static final String KEY_ACCEPT_HEADER = "Accept";
+    private static final String KEY_REQUEST_HEADERS = "requestHeaders";
     
     private static final String KEY_KEYSTORE_PASSWORD = "keystorePassword";
     
@@ -501,17 +500,18 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
         final String userAgent = (String) getParam(opts, KEY_USER_AGENT);
         return userAgent != null ? userAgent : DEFAULT_USER_AGENT;
     }
-
-    public void setAcceptHeader(final FileSystemOptions opts, final String acceptHeader){
-    	setParam(opts, KEY_ACCEPT_HEADER, acceptHeader);
+    
+    public void setRequestHeaders(final FileSystemOptions opts, final Map<String, String> value){
+    	setParam(opts, KEY_REQUEST_HEADERS, value);
     }
     
-    public String getAcceptHeader(final FileSystemOptions opts){
-    	return getString(opts, KEY_ACCEPT_HEADER);
+    @SuppressWarnings("unchecked")
+	public Map<String, String> getRequestHeaders(final FileSystemOptions opts){
+    	return (Map<String, String>) getParam(opts, KEY_REQUEST_HEADERS);
     	
     }
     
-
+    
     @Override
     protected Class<? extends FileSystem> getConfigClass()
     {
