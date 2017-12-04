@@ -20,6 +20,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
@@ -77,8 +80,7 @@ public class HttpFileObject<FS extends HttpFileSystem> extends AbstractFileObjec
     private final String userAgent;
     private final boolean followRedirect;
     
-    private final String acceptHeader;
-    
+    private final Map<String, String> requestHeaders;
     
 	private HeadMethod method;
 
@@ -95,7 +97,7 @@ public class HttpFileObject<FS extends HttpFileSystem> extends AbstractFileObjec
         urlCharset = builder.getUrlCharset(fileSystemOptions);
         userAgent = builder.getUserAgent(fileSystemOptions);
         followRedirect = builder.getFollowRedirect(fileSystemOptions);
-        acceptHeader = builder.getAcceptHeader(fileSystemOptions);
+        requestHeaders = builder.getRequestHeaders(fileSystemOptions);
     }
 
     /**
@@ -233,11 +235,11 @@ public class HttpFileObject<FS extends HttpFileSystem> extends AbstractFileObjec
         return userAgent;
     }
 
-    protected String getAcceptHeader() {
-		return acceptHeader;
+    protected Map<String, String> getRequestHeaders() {
+		return requestHeaders;
 	}
-    
-    HeadMethod getHeadMethod() throws IOException
+
+	HeadMethod getHeadMethod() throws IOException
     {
         if (method != null)
         {
@@ -270,11 +272,13 @@ public class HttpFileObject<FS extends HttpFileSystem> extends AbstractFileObjec
         method.setPath(pathEncoded);
         method.setFollowRedirects(this.getFollowRedirect());
         method.setRequestHeader("User-Agent", this.getUserAgent());
-        if (this.getAcceptHeader() != null)
-        {
-        	method.setRequestHeader("Accept", this.getAcceptHeader());
+        if(this.getRequestHeaders() != null && !this.getRequestHeaders().isEmpty()){
+        	for (Iterator<Entry<String, String>> iterator = this.getRequestHeaders().entrySet().iterator(); iterator.hasNext();) {
+				Entry<String, String> entry = iterator.next();
+				method.setRequestHeader(entry.getKey(), entry.getValue());
+			}
         }
-        
+                
     }
 
     /*
