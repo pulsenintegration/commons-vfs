@@ -32,7 +32,7 @@ import org.apache.commons.vfs2.provider.GenericFileName;
  * An HTTP file system.
  */
 public class HttpFileSystem extends AbstractFileSystem {
-    private final HttpClient client;
+    private HttpClient client;
 
     protected HttpFileSystem(final GenericFileName rootName, final HttpClient client,
             final FileSystemOptions fileSystemOptions) {
@@ -56,10 +56,12 @@ public class HttpFileSystem extends AbstractFileSystem {
     @Override
     public void closeCommunicationLink() {
         if (getClient() != null) {
-            final HttpConnectionManager mgr = getClient().getHttpConnectionManager();
+            HttpConnectionManager mgr = getClient().getHttpConnectionManager();
             if (mgr instanceof MultiThreadedHttpConnectionManager) {
                 ((MultiThreadedHttpConnectionManager) mgr).shutdown();
+                mgr = null;
             }
+            client = null;
         }
     }
 
