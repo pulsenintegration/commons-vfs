@@ -65,7 +65,7 @@ public class GetContentInfoFunctionalTest {
         }
 
         final FileSystemManager fsManager = VFS.getManager();
-        final FileObject fo = fsManager.resolveFile("https://www.apache.org/licenses/LICENSE-2.0.txt", opts);
+        final FileObject fo = fsManager.resolveFile("http://www.apache.org/licenses/LICENSE-2.0.txt", opts);
         final FileContent content = fo.getContent();
         Assert.assertNotNull(content);
         // Used to NPE before fix:
