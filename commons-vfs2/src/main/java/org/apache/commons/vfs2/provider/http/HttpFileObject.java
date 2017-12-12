@@ -238,8 +238,8 @@ public class HttpFileObject<FS extends HttpFileSystem> extends AbstractFileObjec
     protected Map<String, String> getRequestHeaders() {
 		return requestHeaders;
 	}
-
-	HeadMethod getHeadMethod() throws IOException
+    
+	synchronized HeadMethod getHeadMethod() throws IOException
     {
         if (method != null)
         {
