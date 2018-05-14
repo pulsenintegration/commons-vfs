@@ -46,6 +46,7 @@ public class FtpFileSystemConfigBuilder extends FileSystemConfigBuilder {
     private static final String SHORT_MONTH_NAMES = _PREFIX + ".SHORT_MONTH_NAMES";
     private static final String SO_TIMEOUT = _PREFIX + ".SO_TIMEOUT";
     private static final String USER_DIR_IS_ROOT = _PREFIX + ".USER_DIR_IS_ROOT";
+    private static final String SITE_COMMAND = _PREFIX + ".SITE_COMMAND";
 
     private FtpFileSystemConfigBuilder() {
         super("ftp.");
@@ -239,6 +240,15 @@ public class FtpFileSystemConfigBuilder extends FileSystemConfigBuilder {
     }
 
     /**
+     * @param opts The FileSystem options.
+     * @return The parameter for the SITE command.
+     * @since 2.2
+     */
+    public String getSiteCommand(final FileSystemOptions opts) {
+    	return getString(opts, SITE_COMMAND);
+    }
+    
+    /**
      * Sets the timeout for the initial control connection.
      * <p>
      * If you set the connectTimeout to {@code null} no connectTimeout will be set.
@@ -420,6 +430,16 @@ public class FtpFileSystemConfigBuilder extends FileSystemConfigBuilder {
      */
     public void setUserDirIsRoot(final FileSystemOptions opts, final boolean userDirIsRoot) {
         setParam(opts, USER_DIR_IS_ROOT, userDirIsRoot ? Boolean.TRUE : Boolean.FALSE);
+    }
+    
+    /**
+     * Send SITE command before GET and PUT commands.
+     *
+     * @param opts The FileSystemOptions.
+     * @param siteCommand site command parameters.
+     */
+    public void setSiteCommand(final FileSystemOptions opts, final String siteCommand) {
+    	setParam(opts, SITE_COMMAND, siteCommand);
     }
 
 }

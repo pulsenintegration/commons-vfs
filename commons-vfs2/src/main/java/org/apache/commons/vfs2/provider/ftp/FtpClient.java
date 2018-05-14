@@ -53,5 +53,5 @@ public interface FtpClient {
 
     boolean abort() throws IOException;
 
-    String getReplyString() throws IOException;
+    String getReplyString() throws IOException;    
 }
