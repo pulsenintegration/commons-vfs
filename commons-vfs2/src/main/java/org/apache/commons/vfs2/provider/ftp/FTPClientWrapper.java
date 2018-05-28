@@ -206,6 +206,7 @@ public class FTPClientWrapper implements FtpClient {
     @Override
     public InputStream retrieveFileStream(final String relPath) throws IOException {
         try {
+        	sendSiteCommand();
             return getFtpClient().retrieveFileStream(relPath);
         } catch (final IOException e) {
             disconnect();
@@ -240,6 +241,7 @@ public class FTPClientWrapper implements FtpClient {
     @Override
     public OutputStream storeFileStream(final String relPath) throws IOException {
         try {
+        	sendSiteCommand();
             return getFtpClient().storeFileStream(relPath);
         } catch (final IOException e) {
             disconnect();
@@ -266,5 +268,13 @@ public class FTPClientWrapper implements FtpClient {
     @Override
     public String getReplyString() throws IOException {
         return getFtpClient().getReplyString();
+    }
+    
+    private boolean sendSiteCommand() throws IOException {
+    	String siteCommand = FtpFileSystemConfigBuilder.getInstance().getSiteCommand(fileSystemOptions);
+    	if (siteCommand != null) {
+    		return getFtpClient().sendSiteCommand(siteCommand);
+    	}
+    	return true;
     }
 }
