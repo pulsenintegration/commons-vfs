@@ -51,18 +51,14 @@ import org.apache.commons.vfs2.util.RandomAccessMode;
  *
  * @param <FS> An {@link HttpFileSystem} subclass
  */
-public class HttpFileObject<FS extends HttpFileSystem> extends AbstractFileObject<FS>
-{
+public class HttpFileObject<FS extends HttpFileSystem> extends AbstractFileObject<FS> {
     /**
      * An InputStream that cleans up the HTTP connection on close.
      */
-    static class HttpInputStream extends MonitorInputStream
-    {
+    static class HttpInputStream extends MonitorInputStream {
         private final GetMethod method;
 
-        public HttpInputStream(final GetMethod method)
-            throws IOException
-        {
+        public HttpInputStream(final GetMethod method) throws IOException {
             super(method.getResponseBodyAsStream());
             this.method = method;
         }
@@ -71,8 +67,7 @@ public class HttpFileObject<FS extends HttpFileSystem> extends AbstractFileObjec
          * Called after the stream has been closed.
          */
         @Override
-        protected void onClose() throws IOException
-        {
+        protected void onClose() throws IOException {
             method.releaseConnection();
         }
     }
@@ -84,14 +79,12 @@ public class HttpFileObject<FS extends HttpFileSystem> extends AbstractFileObjec
     
 	private HeadMethod method;
 
-    protected HttpFileObject(final AbstractFileName name, final FS fileSystem)
-    {
+    protected HttpFileObject(final AbstractFileName name, final FS fileSystem) {
         this(name, fileSystem, HttpFileSystemConfigBuilder.getInstance());
     }
 
     protected HttpFileObject(final AbstractFileName name, final FS fileSystem,
-                             final HttpFileSystemConfigBuilder builder)
-    {
+                             final HttpFileSystemConfigBuilder builder) {
         super(name, fileSystem);
         final FileSystemOptions fileSystemOptions = fileSystem.getFileSystemOptions();
         urlCharset = builder.getUrlCharset(fileSystemOptions);
@@ -104,8 +97,7 @@ public class HttpFileObject<FS extends HttpFileSystem> extends AbstractFileObjec
      * Detaches this file object from its file resource.
      */
     @Override
-    protected void doDetach() throws Exception
-    {
+    protected void doDetach() throws Exception {
         method = null;
     }
 
@@ -113,11 +105,9 @@ public class HttpFileObject<FS extends HttpFileSystem> extends AbstractFileObjec
      * Returns the size of the file content (in bytes).
      */
     @Override
-    protected long doGetContentSize() throws Exception
-    {
+    protected long doGetContentSize() throws Exception {
         final Header header = method.getResponseHeader("content-length");
-        if (header == null)
-        {
+        if (header == null) {
             // Assume 0 content-length
             return 0;
         }
@@ -134,17 +124,14 @@ public class HttpFileObject<FS extends HttpFileSystem> extends AbstractFileObjec
      * The returned stream does not have to be buffered.
      */
     @Override
-    protected InputStream doGetInputStream() throws Exception
-    {
+    protected InputStream doGetInputStream() throws Exception {
         final GetMethod getMethod = new GetMethod();
         setupMethod(getMethod);
         final int status = getAbstractFileSystem().getClient().executeMethod(getMethod);
-        if (status == HttpURLConnection.HTTP_NOT_FOUND)
-        {
+        if (status == HttpURLConnection.HTTP_NOT_FOUND) {
             throw new FileNotFoundException(getName());
         }
-        if (status != HttpURLConnection.HTTP_OK)
-        {
+        if (status != HttpURLConnection.HTTP_OK) {
             throw new FileSystemException("vfs.provider.http/get.error", getName(), Integer.valueOf(status));
         }
 
@@ -157,19 +144,16 @@ public class HttpFileObject<FS extends HttpFileSystem> extends AbstractFileObjec
      * This implementation throws an exception.
      */
     @Override
-    protected long doGetLastModifiedTime() throws Exception
-    {
+    protected long doGetLastModifiedTime() throws Exception {
         final Header header = method.getResponseHeader("last-modified");
-        if (header == null)
-        {
+        if (header == null) {
             throw new FileSystemException("vfs.provider.http/last-modified.error", getName());
         }
         return DateUtil.parseDate(header.getValue()).getTime();
     }
 
     @Override
-    protected RandomAccessContent doGetRandomAccessContent(final RandomAccessMode mode) throws Exception
-    {
+    protected RandomAccessContent doGetRandomAccessContent(final RandomAccessMode mode) throws Exception {
         return new HttpRandomAccessContent(this, mode);
     }
 
@@ -178,29 +162,22 @@ public class HttpFileObject<FS extends HttpFileSystem> extends AbstractFileObjec
      * value of this method is cached, so the implementation can be expensive.
      */
     @Override
-    protected FileType doGetType() throws Exception
-    {
+    protected FileType doGetType() throws Exception {
         // Use the HEAD method to probe the file.
         final int status = this.getHeadMethod().getStatusCode();
-        if (status == HttpURLConnection.HTTP_OK
-            || status == HttpURLConnection.HTTP_BAD_METHOD /* method is bad, but resource exist */)
-        {
+        if (status == HttpURLConnection.HTTP_OK || status == HttpURLConnection.HTTP_BAD_METHOD /* method is bad, but resource exist */) {
             return FileType.FILE;
         }
-        else if (status == HttpURLConnection.HTTP_NOT_FOUND
-            || status == HttpURLConnection.HTTP_GONE)
-        {
+        else if (status == HttpURLConnection.HTTP_NOT_FOUND || status == HttpURLConnection.HTTP_GONE) {
             return FileType.IMAGINARY;
         }
-        else
-        {
+        else {
             throw new FileSystemException("vfs.provider.http/head.error", getName(), Integer.valueOf(status));
         }
     }
 
     @Override
-    protected boolean doIsWriteable() throws Exception
-    {
+    protected boolean doIsWriteable() throws Exception {
         return false;
     }
 
@@ -208,30 +185,25 @@ public class HttpFileObject<FS extends HttpFileSystem> extends AbstractFileObjec
      * Lists the children of this file.
      */
     @Override
-    protected String[] doListChildren() throws Exception
-    {
+    protected String[] doListChildren() throws Exception {
         throw new Exception("Not implemented.");
     }
 
-    protected String encodePath(final String decodedPath) throws URIException
-    {
+    protected String encodePath(final String decodedPath) throws URIException {
         return URIUtil.encodePath(decodedPath);
     }
 
 
     @Override
-    protected FileContentInfoFactory getFileContentInfoFactory()
-    {
+    protected FileContentInfoFactory getFileContentInfoFactory() {
         return new HttpFileContentInfoFactory();
     }
 
-    protected boolean getFollowRedirect()
-    {
+    protected boolean getFollowRedirect() {
         return followRedirect;
     }
 
-    protected String getUserAgent()
-    {
+    protected String getUserAgent() {
         return userAgent;
     }
 
@@ -239,10 +211,8 @@ public class HttpFileObject<FS extends HttpFileSystem> extends AbstractFileObjec
 		return requestHeaders;
 	}
 
-	HeadMethod getHeadMethod() throws IOException
-    {
-        if (method != null)
-        {
+	HeadMethod getHeadMethod() throws IOException {
+        if (method != null) {
             return method;
         }
         method = new HeadMethod();
@@ -253,8 +223,7 @@ public class HttpFileObject<FS extends HttpFileSystem> extends AbstractFileObjec
         return method;
     }
 
-    protected String getUrlCharset()
-    {
+    protected String getUrlCharset() {
         return urlCharset;
     }
 
@@ -266,13 +235,12 @@ public class HttpFileObject<FS extends HttpFileSystem> extends AbstractFileObjec
      * @throws URIException if path cannot be represented.
      * @since 2.0 (was package)
      */
-    protected void setupMethod(final HttpMethod method) throws FileSystemException, URIException
-    {
+    protected void setupMethod(final HttpMethod method) throws FileSystemException, URIException {
         final String pathEncoded = ((URLFileName) getName()).getPathQueryEncoded(this.getUrlCharset());
         method.setPath(pathEncoded);
         method.setFollowRedirects(this.getFollowRedirect());
         method.setRequestHeader("User-Agent", this.getUserAgent());
-        if(this.getRequestHeaders() != null && !this.getRequestHeaders().isEmpty()){
+        if(this.getRequestHeaders() != null && !this.getRequestHeaders().isEmpty()) {
         	for (Iterator<Entry<String, String>> iterator = this.getRequestHeaders().entrySet().iterator(); iterator.hasNext();) {
 				Entry<String, String> entry = iterator.next();
 				method.setRequestHeader(entry.getKey(), entry.getValue());

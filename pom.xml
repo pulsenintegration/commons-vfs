@@ -21,7 +21,7 @@
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-parent</artifactId>
-    <version>42</version>
+    <version>46</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -39,6 +39,7 @@
     <module>commons-vfs2-examples</module>
     <module>commons-vfs2-distribution</module>
   </modules>
+  <!-- commons-vfs2-sandbox is in profile include-sandbox -->
 
   <issueManagement>
     <system>jira</system>
@@ -166,11 +167,19 @@
     <version.checkstyle>2.17</version.checkstyle>
     <!-- make sure bundle plugin has dependency informations for 'optional' -->
     <commons.osgi.excludeDependencies />
+	<commons.osgi.import>
+		org.apache.hadoop.*;resolution:=optional,
+		org.apache.jackrabbit.*;resolution:=optional,
+		org.apache.tools.ant.*;resolution:=optional,
+		org.apache.commons.httpclient.*;resolution:=optional,
+		*
+	</commons.osgi.import>
     <!-- Newer versions of clirr throw an NPE building the site -->
     <commons.clirr.version>2.6</commons.clirr.version>
     <!-- Avoid warnings about being unable to find jars during site building -->
     <dependency.locations.enabled>false</dependency.locations.enabled>
     <hadoop.version>2.6.0</hadoop.version>
+    <commons.surefire.version>2.19.1</commons.surefire.version>
   </properties>
 
   <build>
@@ -261,7 +270,7 @@
             <exclude>src/test/resources/test-data/**/*.txt</exclude>
             <exclude>src/test/resources/test-data/test.mf</exclude>
             <!--  implicite exclude does not work if sandbox profile is not activated -->
-            <exclude>sandbox/**</exclude>
+            <exclude>commons-vfs2-sandbox/**</exclude>
           </excludes>
         </configuration>
       </plugin>
@@ -281,7 +290,7 @@
             <exclude>src/test/resources/test-data/**/*.txt</exclude>
             <exclude>src/test/resources/test-data/test.mf</exclude>
             <!--  implicit exclude does not work if sandbox profile is not activated -->
-            <exclude>sandbox/**</exclude>
+            <exclude>commons-vfs2-sandbox/**</exclude>
           </excludes>
         </configuration>
       </plugin>
@@ -328,7 +337,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-pmd-plugin</artifactId>
-        <version>3.8</version>
+        <version>3.9.0</version>
         <configuration>
           <targetJdk>${maven.compiler.target}</targetJdk>
           <aggregate>true</aggregate>
@@ -408,7 +417,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-compress</artifactId>
-        <version>1.15</version>
+        <version>1.16.1</version>
       </dependency>
       <dependency>
         <groupId>org.apache.jackrabbit</groupId>
@@ -467,7 +476,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
-        <version>3.6</version>
+        <version>3.7</version>
       </dependency>
       <!-- Test FTP with Apache FTP Server (MINA) -->
       <dependency>
@@ -494,6 +503,7 @@
       <dependency>
         <groupId>org.apache.mina</groupId>
         <artifactId>mina-core</artifactId>
+        <!-- 2.0.8 causes tests to fail -->
         <version>2.0.7</version>
       </dependency>
       <dependency>
@@ -510,7 +520,7 @@
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpcore-nio</artifactId>
-        <version>4.4.7</version>
+        <version>4.4.9</version>
       </dependency>
       <!-- Test WebDAV with Apache Jackrabbit -->
       <dependency>
