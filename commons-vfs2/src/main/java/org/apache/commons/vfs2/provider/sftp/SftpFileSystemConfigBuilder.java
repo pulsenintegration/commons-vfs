@@ -124,6 +124,7 @@ public final class SftpFileSystemConfigBuilder extends FileSystemConfigBuilder {
     private static final String PROXY_USER = _PREFIX + ".PROXY_USER";
     private static final String SESSION_TIMEOUT_MILLIS = _PREFIX + ".TIMEOUT";
     private static final String STRICT_HOST_KEY_CHECKING = _PREFIX + ".STRICT_HOST_KEY_CHECKING";
+    private static final String SFTP_DISABLED_EXEC_CHANNEL = _PREFIX + ".SFTP_DISABLED_EXEC_CHANNEL";
     private static final String USER_DIR_IS_ROOT = _PREFIX + ".USER_DIR_IS_ROOT";
 
     /**
@@ -351,6 +352,19 @@ public final class SftpFileSystemConfigBuilder extends FileSystemConfigBuilder {
     @Deprecated
     public Integer getTimeout(final FileSystemOptions opts) {
         return this.getInteger(opts, SESSION_TIMEOUT_MILLIS);
+    }
+
+    /**
+     * Returns {@link Boolean#TRUE} if VFS should treat the SFTP exec channel as disabled. Defaults to
+     * <code>Boolean.TRUE</code> if the method {@link #setSftpDisabledExecChannel(FileSystemOptions, boolean)}
+     * has not been invoked.
+     *
+     * @param opts The FileSystemOptions.
+     * @return <code>Boolean.TRUE</code> if VFS treats the SFTP exec channel as disabled.
+     * @see #setSftpDisabledExecChannel
+     */
+    public Boolean getSftpDisabledExecChannel(final FileSystemOptions opts) {
+        return this.getBoolean(opts, SFTP_DISABLED_EXEC_CHANNEL, Boolean.TRUE);
     }
 
     /**
@@ -620,6 +634,16 @@ public final class SftpFileSystemConfigBuilder extends FileSystemConfigBuilder {
     @Deprecated
     public void setTimeout(final FileSystemOptions opts, final Integer timeout) {
         this.setParam(opts, SESSION_TIMEOUT_MILLIS, timeout);
+    }
+
+    /**
+     * Sets the whether to use the user directory as root (do not change to file system root).
+     *
+     * @param opts The FileSystem options.
+     * @param sftpDisabledExecChannel true if the SFTP exec channel is disabled.
+     */
+    public void setSftpDisabledExecChannel(final FileSystemOptions opts, final Boolean sftpDisabledExecChannel) {
+        this.setParam(opts, SFTP_DISABLED_EXEC_CHANNEL, sftpDisabledExecChannel);
     }
 
     /**

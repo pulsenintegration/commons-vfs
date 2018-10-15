@@ -20,8 +20,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collection;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.vfs2.Capability;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
@@ -42,8 +40,6 @@ import com.jcraft.jsch.SftpException;
  * Represents the files on an SFTP server.
  */
 public class SftpFileSystem extends AbstractFileSystem {
-	
-    private static final Log LOG = LogFactory.getLog(SftpFileSystem.class);
 
     private static final int SLEEP_MILLIS = 100;
 
@@ -69,10 +65,6 @@ public class SftpFileSystem extends AbstractFileSystem {
      */
     private int[] groupsIds;
 
-    /**
-     * Some SFTP-only servers disable the exec channel. When exec is disabled, things like getUId() will always fail.
-     */
-    private boolean execDisabled; 
 
     protected SftpFileSystem(final GenericFileName rootName, final Session session,
             final FileSystemOptions fileSystemOptions) {
@@ -80,7 +72,6 @@ public class SftpFileSystem extends AbstractFileSystem {
         this.session = session;
         final SftpFileSystemConfigBuilder builder = SftpFileSystemConfigBuilder.getInstance();
         this.connectTimeoutMillis = builder.getConnectTimeoutMillis(fileSystemOptions);
-        detectExecDisabled();
     }
 
     @Override
@@ -269,10 +260,10 @@ public class SftpFileSystem extends AbstractFileSystem {
     }
 
     /**
-     * @see SftpFileSystem#execDisabled
+     * @see SftpFileSystemConfigBuilder#getSftpDisabledExecChannel(FileSystemOptions)
      */
     public boolean isExecDisabled() {
-        return execDisabled;
+        return SftpFileSystemConfigBuilder.getInstance().getSftpDisabledExecChannel(getFileSystemOptions());
     }
 
     /**
@@ -289,43 +280,33 @@ public class SftpFileSystem extends AbstractFileSystem {
         ensureSession();
         final ChannelExec channel = (ChannelExec) session.openChannel("exec");
 
-        channel.setCommand(command);
-        channel.setInputStream(null);
-        try (final InputStreamReader stream = new InputStreamReader(channel.getInputStream())) {
-            channel.setErrStream(System.err, true);
-            channel.connect(connectTimeoutMillis);
+        // Workaround for when stream.read() blocks indefinitely
+        if (!isExecDisabled()) {
+	        channel.setCommand(command);
+	        channel.setInputStream(null);
+	        try (final InputStreamReader stream = new InputStreamReader(channel.getInputStream())) {
+	            channel.setErrStream(System.err, true);
+	            channel.connect(connectTimeoutMillis);
 
-            // Read the stream
-            final char[] buffer = new char[EXEC_BUFFER_SIZE];
-            int read;
-            while ((read = stream.read(buffer, 0, buffer.length)) >= 0) {
-                output.append(buffer, 0, read);
-            }
-        }
+	            // Read the stream
+	            final char[] buffer = new char[EXEC_BUFFER_SIZE];
+	            int read;
+	            while ((read = stream.read(buffer, 0, buffer.length)) >= 0) {
+	                output.append(buffer, 0, read);
+	            }
+	        }
 
-        // Wait until the command finishes (should not be long since we read the output stream)
-        while (!channel.isClosed()) {
-            try {
-                Thread.sleep(SLEEP_MILLIS);
-            } catch (final Exception ee) {
-                // TODO: swallow exception, really?
-            }
+	        // Wait until the command finishes (should not be long since we read the output stream)
+	        while (!channel.isClosed()) {
+	            try {
+	                Thread.sleep(SLEEP_MILLIS);
+	            } catch (final Exception ee) {
+	                // TODO: swallow exception, really?
+	            }
+	        }
+	        channel.disconnect();
         }
-        channel.disconnect();
         return channel.getExitStatus();
     }
 
-    /**
-     * Some SFTP-only servers disable the exec channel.
-     * 
-     * Attempt to detect this by calling getUid.
-     */
-    private void detectExecDisabled() {
-        try {
-            getUId();
-        } catch(JSchException | IOException e) {
-            execDisabled = true;
-            LOG.debug("Cannot get UID, assuming no exec channel is present", e);
-        }
-    }
 }
