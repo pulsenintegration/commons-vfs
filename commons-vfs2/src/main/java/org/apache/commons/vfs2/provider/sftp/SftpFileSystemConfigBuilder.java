@@ -356,7 +356,7 @@ public final class SftpFileSystemConfigBuilder extends FileSystemConfigBuilder {
 
     /**
      * Returns {@link Boolean#TRUE} if VFS should treat the SFTP exec channel as disabled. Defaults to
-     * <code>Boolean.TRUE</code> if the method {@link #setSftpDisabledExecChannel(FileSystemOptions, boolean)}
+     * <code>Boolean.FALSE</code> if the method {@link #setSftpDisabledExecChannel(FileSystemOptions, boolean)}
      * has not been invoked.
      *
      * @param opts The FileSystemOptions.
@@ -364,7 +364,7 @@ public final class SftpFileSystemConfigBuilder extends FileSystemConfigBuilder {
      * @see #setSftpDisabledExecChannel
      */
     public Boolean getSftpDisabledExecChannel(final FileSystemOptions opts) {
-        return this.getBoolean(opts, SFTP_DISABLED_EXEC_CHANNEL, Boolean.TRUE);
+        return this.getBoolean(opts, SFTP_DISABLED_EXEC_CHANNEL, Boolean.FALSE);
     }
 
     /**
