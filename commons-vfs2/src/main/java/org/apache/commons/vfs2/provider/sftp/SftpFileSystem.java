@@ -260,10 +260,10 @@ public class SftpFileSystem extends AbstractFileSystem {
     }
 
     /**
-     * @see SftpFileSystemConfigBuilder#getSftpDisabledExecChannel(FileSystemOptions)
+     * @see SftpFileSystemConfigBuilder#getExecChannelDisabled(FileSystemOptions)
      */
-    public boolean isExecDisabled() {
-        return SftpFileSystemConfigBuilder.getInstance().getSftpDisabledExecChannel(getFileSystemOptions());
+    public boolean isExecChannelDisabled() {
+        return SftpFileSystemConfigBuilder.getInstance().getExecChannelDisabled(getFileSystemOptions());
     }
 
     /**
@@ -281,7 +281,7 @@ public class SftpFileSystem extends AbstractFileSystem {
         final ChannelExec channel = (ChannelExec) session.openChannel("exec");
 
         // Workaround for when stream.read() blocks indefinitely
-        if (!isExecDisabled()) {
+        if (!isExecChannelDisabled()) {
 	        channel.setCommand(command);
 	        channel.setInputStream(null);
 	        try (final InputStreamReader stream = new InputStreamReader(channel.getInputStream())) {

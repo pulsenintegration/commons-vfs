@@ -249,7 +249,7 @@ public class SftpFileObject extends AbstractFileObject<SftpFileSystem> {
         statSelf();
         boolean isInGroup = false;
         if (checkIds) {
-            if(getAbstractFileSystem().isExecDisabled()) {
+            if(getAbstractFileSystem().isExecChannelDisabled()) {
                 // Exec is disabled, so we won't be able to ascertain the current user's UID and GID.
                 // Return "always-true" permissions as a workaround, knowing that the SFTP server won't 
                 // let us perform unauthorized actions anyway.
