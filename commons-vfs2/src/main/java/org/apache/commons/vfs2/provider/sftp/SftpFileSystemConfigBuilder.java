@@ -124,7 +124,7 @@ public final class SftpFileSystemConfigBuilder extends FileSystemConfigBuilder {
     private static final String PROXY_USER = _PREFIX + ".PROXY_USER";
     private static final String SESSION_TIMEOUT_MILLIS = _PREFIX + ".TIMEOUT";
     private static final String STRICT_HOST_KEY_CHECKING = _PREFIX + ".STRICT_HOST_KEY_CHECKING";
-    private static final String SFTP_DISABLED_EXEC_CHANNEL = _PREFIX + ".SFTP_DISABLED_EXEC_CHANNEL";
+    private static final String EXEC_CHANNEL_DISABLED = _PREFIX + ".EXEC_CHANNEL_DISABLED";
     private static final String USER_DIR_IS_ROOT = _PREFIX + ".USER_DIR_IS_ROOT";
 
     /**
@@ -356,15 +356,15 @@ public final class SftpFileSystemConfigBuilder extends FileSystemConfigBuilder {
 
     /**
      * Returns {@link Boolean#TRUE} if VFS should treat the SFTP exec channel as disabled. Defaults to
-     * <code>Boolean.FALSE</code> if the method {@link #setSftpDisabledExecChannel(FileSystemOptions, boolean)}
+     * <code>Boolean.FALSE</code> if the method {@link #setExecChannelDisabled(FileSystemOptions, boolean)}
      * has not been invoked.
      *
      * @param opts The FileSystemOptions.
      * @return <code>Boolean.TRUE</code> if VFS treats the SFTP exec channel as disabled.
-     * @see #setSftpDisabledExecChannel
+     * @see #setExecChannelDisabled
      */
-    public Boolean getSftpDisabledExecChannel(final FileSystemOptions opts) {
-        return this.getBoolean(opts, SFTP_DISABLED_EXEC_CHANNEL, Boolean.FALSE);
+    public Boolean getExecChannelDisabled(final FileSystemOptions opts) {
+        return this.getBoolean(opts, EXEC_CHANNEL_DISABLED, Boolean.FALSE);
     }
 
     /**
@@ -640,10 +640,10 @@ public final class SftpFileSystemConfigBuilder extends FileSystemConfigBuilder {
      * Sets the whether to use the user directory as root (do not change to file system root).
      *
      * @param opts The FileSystem options.
-     * @param sftpDisabledExecChannel true if the SFTP exec channel is disabled.
+     * @param execChannelDisabled true if the SFTP exec channel is disabled.
      */
-    public void setSftpDisabledExecChannel(final FileSystemOptions opts, final Boolean sftpDisabledExecChannel) {
-        this.setParam(opts, SFTP_DISABLED_EXEC_CHANNEL, sftpDisabledExecChannel);
+    public void setExecChannelDisabled(final FileSystemOptions opts, final Boolean execChannelDisabled) {
+        this.setParam(opts, EXEC_CHANNEL_DISABLED, execChannelDisabled);
     }
 
     /**
