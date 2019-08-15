@@ -17,6 +17,7 @@
 package org.apache.commons.vfs2.provider.sftp;
 
 import java.io.File;
+import java.util.Arrays;
 
 /**
  * Structure for an identity.
@@ -100,4 +101,44 @@ public class IdentityInfo {
     public byte[] getPassPhrase() {
         return passPhrase;
     }
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Arrays.hashCode(passPhrase);
+		result = prime * result + ((privateKey == null) ? 0 : privateKey.hashCode());
+		result = prime * result + ((publicKey == null) ? 0 : publicKey.hashCode());
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		IdentityInfo other = (IdentityInfo) obj;
+		if (!Arrays.equals(passPhrase, other.passPhrase))
+			return false;
+		if (privateKey == null) {
+			if (other.privateKey != null)
+				return false;
+		} else if (!privateKey.equals(other.privateKey))
+			return false;
+		if (publicKey == null) {
+			if (other.publicKey != null)
+				return false;
+		} else if (!publicKey.equals(other.publicKey))
+			return false;
+		return true;
+	}
 }
